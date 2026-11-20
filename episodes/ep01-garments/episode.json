@@ -7,8 +7,9 @@
  },
  "fps": 30,
  "voice": {
-  "speed": 1.0,
-  "gap": 0.34
+  "engine": "neural",
+  "name": "bn-BD-PradeepNeural",
+  "gap": 0.3
  },
  "bpm": 84,
  "scenes": [

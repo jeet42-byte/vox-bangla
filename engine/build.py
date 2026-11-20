@@ -76,6 +76,15 @@ def narrate(ep: dict, ep_dir: Path, bdir: Path):
     human = ep_dir / "vo"
     narrator = None
     out = {}
+    v = ep.get("voice", {})
+    neural = neural_dir = None
+    if v.get("engine") == "neural":
+        neural_dir = ep_dir / "vo-neural" / v.get("name", "bn-BD-PradeepNeural")
+        mf = neural_dir / "manifest.json"
+        if not mf.exists():
+            raise SystemExit(f"{mf} not found: run engine/neural_voice.py on a computer with internet and upload the vo-neural folder")
+        neural = json.loads(mf.read_text())
+        print(f"  voice: {neural['voice']} (neural)")
     for sc in ep["scenes"]:
         say = sc.get("say", "").strip()
         if not say:
@@ -91,6 +100,21 @@ def narrate(ep: dict, ep_dir: Path, bdir: Path):
             for s_ in sents:
                 d = dur * len(s_) / tot; marks.append((s_, c, c + d)); c += d
             out[sc["id"]] = (x, marks)
+            continue
+        if neural is not None:                   # Microsoft bn-BD neural voice
+            items = neural["scenes"].get(sc["id"])
+            if not items:
+                raise SystemExit(f"neural narration missing for {sc['id']}: re-run engine/neural_voice.py (the script changed)")
+            parts, marks, c = [], [], 0.0
+            gap = np.zeros(int(v.get("gap", 0.30) * SR), np.float32)
+            for i, it in enumerate(items):
+                x = tts.trim(read_wav(neural_dir / it["file"]), SR, 0.02)
+                marks.append((it["text"], c, c + len(x) / SR))
+                parts.append(x); c += len(x) / SR
+                if i < len(items) - 1:
+                    parts.append(gap); c += len(gap) / SR
+            y = np.concatenate(parts)
+            out[sc["id"]] = (y / (np.abs(y).max() + 1e-6) * 0.89, marks)
             continue
         if narrator is None:
             v = ep.get("voice", {})
