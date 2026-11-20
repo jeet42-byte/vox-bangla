@@ -223,7 +223,7 @@
     const total = d.total || 50, per = ctx.portrait ? Math.min(d.perRow || 10, 13) : d.perRow || 25;
     const box = h("div", "people"); cam.appendChild(box);
     box.style.gridTemplateColumns = `repeat(${per}, 1fr)`;
-    Object.assign(box.style, ctx.portrait ? { left: "8%", right: "8%", top: "22%" } : { left: "8%", right: "8%", top: "36%" });
+    Object.assign(box.style, ctx.portrait ? { left: "50%", width: `calc(var(--u)*${Math.min(84, per * 4.5)})`, transform: "translateX(-50%)", top: "21%" } : { left: "8%", right: "8%", top: "36%" });
     const figs = [];
     for (let i = 0; i < total; i++) { const f = h("div", "", PERSON); f.querySelector("svg").style.fill = "#CFC6B5"; box.appendChild(f); figs.push(f); }
     const title = wordLine(d.title || "", "line display");
