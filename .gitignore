@@ -1,0 +1,6 @@
+build/
+models/
+engine/player/world.js
+__pycache__/
+*.pyc
+node_modules/
