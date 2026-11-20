@@ -220,17 +220,17 @@
   const PERSON = '<svg viewBox="0 0 20 32"><circle cx="10" cy="6" r="5.2"/><path d="M2 31 L2 18 Q2 12 10 12 Q18 12 18 18 L18 31 Z"/></svg>';
   S.people = (root, d, ctx) => {
     const cam = h("div", "cam"); root.appendChild(cam);
-    const total = d.total || 50, per = d.perRow || (ctx.portrait ? 10 : 25);
+    const total = d.total || 50, per = ctx.portrait ? Math.min(d.perRow || 10, 13) : d.perRow || 25;
     const box = h("div", "people"); cam.appendChild(box);
     box.style.gridTemplateColumns = `repeat(${per}, 1fr)`;
-    Object.assign(box.style, ctx.portrait ? { left: "8%", right: "8%", top: "26%" } : { left: "8%", right: "8%", top: "36%" });
+    Object.assign(box.style, ctx.portrait ? { left: "8%", right: "8%", top: "22%" } : { left: "8%", right: "8%", top: "36%" });
     const figs = [];
     for (let i = 0; i < total; i++) { const f = h("div", "", PERSON); f.querySelector("svg").style.fill = "#CFC6B5"; box.appendChild(f); figs.push(f); }
     const title = wordLine(d.title || "", "line display");
-    title.el.style.cssText = `position:absolute;left:8%;right:8%;top:${ctx.portrait ? 10 : 12}%;font-size:calc(var(--u)*5.4);line-height:1.2`;
+    title.el.style.cssText = `position:absolute;left:8%;right:8%;top:${ctx.portrait ? 13 : 12}%;font-size:calc(var(--u)*5.4);line-height:1.2`;
     cam.appendChild(title.el);
     const legend = h("div", "legend");
-    Object.assign(legend.style, ctx.portrait ? { left: "8%", top: "56%" } : { left: "8%", bottom: "12%" });
+    Object.assign(legend.style, ctx.portrait ? { left: "8%", top: "61%" } : { left: "8%", bottom: "12%" });
     legend.style.display = "flex"; legend.style.gap = "calc(var(--u)*4)"; legend.style.flexWrap = "wrap";
     cam.appendChild(legend);
     const groups = (d.groups || []).map((g) => {
@@ -756,7 +756,7 @@
       return { ...c, el, ws };
     });
     document.getElementById("reelhead").innerHTML = ep.reelHead ? `<span>${ep.reelHead}</span>` : "";
-    document.getElementById("brandbug").innerHTML = portrait ? `<b>${ctx.brand.name}</b> ${ctx.brand.handle || ""}` : "";
+    document.getElementById("brandbug").innerHTML = portrait && !ep.scenes.some((x) => x.type === "thumb") ? `<b>${ctx.brand.name}</b> ${ctx.brand.handle || ""}` : "";
     return state.total;
   }
 
